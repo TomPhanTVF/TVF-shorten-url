@@ -55,7 +55,7 @@ message LoginRequest {
 
 message LoginResponse {
   User user = 1;
-  string session_id = 2;
+  string token = 2;
 }
 
 message GetMeRequest{}

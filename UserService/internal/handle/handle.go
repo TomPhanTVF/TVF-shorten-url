@@ -3,11 +3,13 @@ package handle
 import (
 	"context"
 	models "user-service/internal/models"
+	"user-service/internal/security"
 	"user-service/internal/service"
 	"user-service/internal/utils"
 	"user-service/pb"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 )
 
 type AuthServiceHandle struct {
@@ -84,17 +86,83 @@ func (a *AuthServiceHandle) FindByID(ctx context.Context, input *pb.FindByIDRequ
 			Password  :user.Password,
 			Email     :user.Email,
 			Role      :user.Role,
-
 		},
 	}
 	return userResponsePRC, nil
 }
-func (a *AuthServiceHandle) Login(context.Context, *pb.LoginRequest) (*pb.LoginResponse, error){
-	return nil, nil
+func (a *AuthServiceHandle) Login(ctx context.Context, input *pb.LoginRequest) (*pb.LoginResponse, error){
+	email := input.GetEmail()
+	if !utils.ValidateEmail(email) {
+
+		return nil, status.Errorf(codes.InvalidArgument, "ValidateEmail: %v", email)
+	}
+
+	user, err := a.userSV.Login(ctx, email, input.GetPassword())
+	if err != nil {
+		return nil, status.Errorf(utils.ParseGRPCErrStatusCode(err), "Login: %v", err)
+	}
+	token, err  := security.Gentoken(user)
+	loginRes := &pb.LoginResponse{
+		User: &pb.User{
+			Id        :user.ID,
+			FirstName :user.FirstName,
+			LastName  :user.LastName,
+			Password  :user.Password,
+			Email     :user.Email,
+			Role      :user.Role,
+		},
+		Token: token,	
+	}
+
+	return loginRes, nil
 }
-func (a *AuthServiceHandle) GetMe(context.Context, *pb.GetMeRequest) (*pb.GetMeResponse, error){
-	return nil, nil
+func (a *AuthServiceHandle) GetMe(ctx context.Context, input *pb.GetMeRequest) (*pb.GetMeResponse, error){
+	token, err := a.getTokenromCtx(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+	}
+	claim, err := security.Verify(token)
+	if err != nil {
+		return nil, err
+	}
+	user, err := a.userSV.FindByEmail(ctx, claim.Email)
+	if err != nil {
+		return nil, status.Errorf(utils.ParseGRPCErrStatusCode(err), "userUC.GetMe: %v", err)
+	}
+	userResponsePRC := &pb.GetMeResponse{
+		User: &pb.User{
+			Id        :user.ID,
+			FirstName :user.FirstName,
+			LastName  :user.LastName,
+			Password  :user.Password,
+			Email     :user.Email,
+			Role      :user.Role,
+		},
+	}
+	return userResponsePRC, nil
 }
-func (a *AuthServiceHandle) Logout(context.Context, *pb.LogoutRequest) (*pb.LogoutResponse, error){
-	return nil, nil
+func (a *AuthServiceHandle) Logout(ctx context.Context, input *pb.LogoutRequest) (*pb.LogoutResponse, error){
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(codes.Unauthenticated, "metadata.FromIncomingContext: %v", utils.ErrNoCtxMetaData)
+	}
+	delete(md, "authorization")
+
+	return &pb.LogoutResponse{}, nil
+}
+
+func (a *AuthServiceHandle) getTokenromCtx(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", status.Errorf(codes.Unauthenticated, "metadata.FromIncomingContext: %v", utils.ErrNoCtxMetaData)
+	}
+
+	values := md["authorization"]
+	if len(values) == 0 {
+		return "", status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+	}
+
+	accessToken := values[0]
+
+	return accessToken, nil
 }
