@@ -1,0 +1,81 @@
+// protoc --go_out=plugins=grpc:. *.proto
+
+syntax = "proto3";
+
+package pb;
+option go_package = "url-service/pb/user"; 
+
+
+message User {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string password = 5;
+  string email = 6;
+  string role = 7;
+}
+
+message RegisterRequest {
+  string email = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string password = 5;
+  string role = 6;
+}
+
+message RegisterResponse {
+  User user = 1;
+}
+
+message FindByEmailRequest {
+  string email = 1;
+}
+
+message FindByEmailResponse {
+  User user = 1;
+}
+
+message FindByIDRequest {
+  string uuid = 1;
+}
+
+message FindByIDResponse {
+  User user = 1;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  User user = 1;
+  string token = 2;
+}
+
+message GetMeRequest{}
+
+message GetMeResponse {
+  User user = 1;
+}
+
+
+message LogoutRequest{}
+
+message LogoutResponse {}
+
+service UserService{
+  rpc Register(RegisterRequest) returns (RegisterResponse){
+    // option (google.api.http) = {
+    //   post: "api/v1/register"
+    //   body: "*"
+    // };
+  };
+  rpc FindByEmail(FindByEmailRequest) returns (FindByEmailResponse);
+  rpc FindByID(FindByIDRequest) returns (FindByIDResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc GetMe(GetMeRequest) returns(GetMeResponse);
+  rpc Logout(LogoutRequest) returns(LogoutResponse);
+}
+
+// protoc --proto_path=proto --go_out=pb/user --go_opt=paths=source_relative --go-grpc_out=pb/user --go-grpc_opt=paths=source_relative proto/user.proto   
