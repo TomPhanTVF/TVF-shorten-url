@@ -1,12 +1,10 @@
-syntax = "proto3";
+// protoc --go_out=plugins=grpc:. *.proto
 
+syntax = "proto3";
 
 package pb;
 option go_package = "user-service/pb"; 
 
-message Session {
-  string session = 1;
-}
 
 message User {
   string id = 1;
@@ -15,8 +13,6 @@ message User {
   string password = 5;
   string email = 6;
   string role = 7;
-//   google.protobuf.Timestamp created_at = 9;
-//   google.protobuf.Timestamp updated_at = 10;
 }
 
 message RegisterRequest {
@@ -25,7 +21,6 @@ message RegisterRequest {
   string last_name = 3;
   string password = 5;
   string role = 6;
-  string avatar = 7;
 }
 
 message RegisterResponse {
@@ -70,7 +65,12 @@ message LogoutRequest{}
 message LogoutResponse {}
 
 service UserService{
-  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse){
+    // option (google.api.http) = {
+    //   post: "api/v1/register"
+    //   body: "*"
+    // };
+  };
   rpc FindByEmail(FindByEmailRequest) returns (FindByEmailResponse);
   rpc FindByID(FindByIDRequest) returns (FindByIDResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
