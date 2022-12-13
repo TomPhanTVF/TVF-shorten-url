@@ -9,14 +9,24 @@ import(
 )
 
 
+type severRPC struct{
+	handle handle.URLServer
+}
+
+func NewServerRPC(handle handle.URLServer) *severRPC{
+	return &severRPC{
+		handle: handle,
+	}
+}
+
 // Run service
-func RunServerRPC() error {
+func(server severRPC) RunServerRPC() error {
 	lis, err := net.Listen("tcp", ":4000")
 	if err != nil {
-		log.Fatalf("Unable to listen on port 3000: %v", err)
+		log.Fatalf("Unable to listen on port 4000: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterURLServiceServer(s, &handle.URLServer{})
+	pb.RegisterURLServiceServer(s, &server.handle)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}

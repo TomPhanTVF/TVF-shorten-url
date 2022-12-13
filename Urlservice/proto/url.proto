@@ -16,7 +16,6 @@ message URL {
 message CreateUrlReq{
     string redirect = 1;
     string TVF = 2;
-    bool random = 3; 
 }
 
 message CreateUrlRes{
@@ -47,11 +46,10 @@ message DeleteUrlReq{
 
 message DeleteUrlRes{
 }
-message GetURLsByOwnerIDReq {
-    string owner_id = 1;
+message GetURLsByOwnerReq {
 }
 
-message GetURLsByOwnerIDRes {
+message GetURLsByOwnerRes {
    repeated URL urls = 1;
 }
 
@@ -60,7 +58,7 @@ service URLService{
     // URL RPC
     rpc CreateUrl(CreateUrlReq) returns (CreateUrlRes);
     rpc DeleteURl(DeleteUrlReq) returns (DeleteUrlRes);
-    rpc GetURLsByOwnerID(GetURLsByOwnerIDReq) returns (GetURLsByOwnerIDReq);
+    rpc GetURLsByOwner(GetURLsByOwnerReq) returns (GetURLsByOwnerRes);
     rpc GetURLs(GetURLsReq) returns (GetURLsRes);
     rpc GetRedirectByTVF (GetRedirectByTVFReq) returns (GetRedirectByTVFRes);
 

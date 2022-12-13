@@ -2,6 +2,7 @@ package models
 
 import (
 	"url-service/internal/utils"
+	"github.com/gofrs/uuid"
 )
 
 
@@ -21,4 +22,10 @@ func(u *URL) PrepareBeforeInsert(){
 		u.Random = true
 	}
 	u.TVF = "TVF" + u.TVF
+}
+
+func(u *URL) GenID()string{
+	id, _ :=  uuid.DefaultGenerator.NewV1()
+	u.Id =  id.String()
+	return u.Id
 }

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	models "user-service/internal/models"
+	"user-service/internal/service"
 	"user-service/internal/repository/postgres"
 	"user-service/internal/repository/redis"
 	"user-service/internal/utils"
@@ -23,7 +24,7 @@ type userUseCase struct {
 }
 
 // New User UseCase
-func NewUserUseCase(userRepo postgres.UserPGRepository, redisRepo redis.UserRedisRepository) *userUseCase {
+func NewUserUseCase(userRepo postgres.UserPGRepository, redisRepo redis.UserRedisRepository) service.UserService {
 	return &userUseCase{userPgRepo: userRepo, redisRepo: redisRepo}
 }
 

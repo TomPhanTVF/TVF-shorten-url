@@ -25,7 +25,7 @@ type URLServiceClient interface {
 	// URL RPC
 	CreateUrl(ctx context.Context, in *CreateUrlReq, opts ...grpc.CallOption) (*CreateUrlRes, error)
 	DeleteURl(ctx context.Context, in *DeleteUrlReq, opts ...grpc.CallOption) (*DeleteUrlRes, error)
-	GetURLsByOwnerID(ctx context.Context, in *GetURLsByOwnerIDReq, opts ...grpc.CallOption) (*GetURLsByOwnerIDReq, error)
+	GetURLsByOwner(ctx context.Context, in *GetURLsByOwnerReq, opts ...grpc.CallOption) (*GetURLsByOwnerRes, error)
 	GetURLs(ctx context.Context, in *GetURLsReq, opts ...grpc.CallOption) (*GetURLsRes, error)
 	GetRedirectByTVF(ctx context.Context, in *GetRedirectByTVFReq, opts ...grpc.CallOption) (*GetRedirectByTVFRes, error)
 }
@@ -56,9 +56,9 @@ func (c *uRLServiceClient) DeleteURl(ctx context.Context, in *DeleteUrlReq, opts
 	return out, nil
 }
 
-func (c *uRLServiceClient) GetURLsByOwnerID(ctx context.Context, in *GetURLsByOwnerIDReq, opts ...grpc.CallOption) (*GetURLsByOwnerIDReq, error) {
-	out := new(GetURLsByOwnerIDReq)
-	err := c.cc.Invoke(ctx, "/pb.URLService/GetURLsByOwnerID", in, out, opts...)
+func (c *uRLServiceClient) GetURLsByOwner(ctx context.Context, in *GetURLsByOwnerReq, opts ...grpc.CallOption) (*GetURLsByOwnerRes, error) {
+	out := new(GetURLsByOwnerRes)
+	err := c.cc.Invoke(ctx, "/pb.URLService/GetURLsByOwner", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ type URLServiceServer interface {
 	// URL RPC
 	CreateUrl(context.Context, *CreateUrlReq) (*CreateUrlRes, error)
 	DeleteURl(context.Context, *DeleteUrlReq) (*DeleteUrlRes, error)
-	GetURLsByOwnerID(context.Context, *GetURLsByOwnerIDReq) (*GetURLsByOwnerIDReq, error)
+	GetURLsByOwner(context.Context, *GetURLsByOwnerReq) (*GetURLsByOwnerRes, error)
 	GetURLs(context.Context, *GetURLsReq) (*GetURLsRes, error)
 	GetRedirectByTVF(context.Context, *GetRedirectByTVFReq) (*GetRedirectByTVFRes, error)
 	mustEmbedUnimplementedURLServiceServer()
@@ -106,8 +106,8 @@ func (UnimplementedURLServiceServer) CreateUrl(context.Context, *CreateUrlReq) (
 func (UnimplementedURLServiceServer) DeleteURl(context.Context, *DeleteUrlReq) (*DeleteUrlRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteURl not implemented")
 }
-func (UnimplementedURLServiceServer) GetURLsByOwnerID(context.Context, *GetURLsByOwnerIDReq) (*GetURLsByOwnerIDReq, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetURLsByOwnerID not implemented")
+func (UnimplementedURLServiceServer) GetURLsByOwner(context.Context, *GetURLsByOwnerReq) (*GetURLsByOwnerRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetURLsByOwner not implemented")
 }
 func (UnimplementedURLServiceServer) GetURLs(context.Context, *GetURLsReq) (*GetURLsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetURLs not implemented")
@@ -164,20 +164,20 @@ func _URLService_DeleteURl_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _URLService_GetURLsByOwnerID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetURLsByOwnerIDReq)
+func _URLService_GetURLsByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetURLsByOwnerReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(URLServiceServer).GetURLsByOwnerID(ctx, in)
+		return srv.(URLServiceServer).GetURLsByOwner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.URLService/GetURLsByOwnerID",
+		FullMethod: "/pb.URLService/GetURLsByOwner",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(URLServiceServer).GetURLsByOwnerID(ctx, req.(*GetURLsByOwnerIDReq))
+		return srv.(URLServiceServer).GetURLsByOwner(ctx, req.(*GetURLsByOwnerReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -234,8 +234,8 @@ var URLService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _URLService_DeleteURl_Handler,
 		},
 		{
-			MethodName: "GetURLsByOwnerID",
-			Handler:    _URLService_GetURLsByOwnerID_Handler,
+			MethodName: "GetURLsByOwner",
+			Handler:    _URLService_GetURLsByOwner_Handler,
 		},
 		{
 			MethodName: "GetURLs",
