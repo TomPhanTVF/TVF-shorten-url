@@ -5,6 +5,8 @@ option go_package = "url-service/pb/url";
 
 import "user.proto";
 
+import "google/api/annotations.proto";
+
 message URL {
     string id = 1;
     string redirect = 2;
@@ -63,4 +65,4 @@ service URLService{
     rpc GetRedirectByTVF (GetRedirectByTVFReq) returns (GetRedirectByTVFRes);
 
 }
-// // protoc --proto_path=proto --go_out=pb/url --go_opt=paths=source_relative --go-grpc_out=pb/url --go-grpc_opt=paths=source_relative proto/url.proto   
+// // protoc --proto_path=proto --go_out=pb/url --go_opt=paths=source_relative --go-grpc_out=pb/url --go-grpc_opt=paths=source_relative --openapiv2_out=doc/swagger proto/url.proto   

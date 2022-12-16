@@ -79,7 +79,7 @@ func (u *URLServer) GetURLsByOwner(ctx context.Context, in *pb.GetURLsByOwnerReq
 	user := u.FindUserByEmail(claim.Email)
 	urls, err := u.FindUrlsByEmail(ctx, user.User.Id)
 	if err != nil {
-		return nil, status.Errorf(utils.ParseGRPCErrStatusCode(err), "Urls: %v", err)
+		return nil, status.Errorf(utils.ParseGRPCErrStatusCode(err), "GetURLsByOwner: %v", err)
 	}
 	var urlsRPC  []*pb.URL
 	for _, v := range urls{
@@ -107,8 +107,16 @@ func (u *URLServer) GetURLsByOwner(ctx context.Context, in *pb.GetURLsByOwnerReq
 func (u *URLServer) GetURLs(context.Context, *pb.GetURLsReq) (*pb.GetURLsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetURLs not implemented")
 }
-func (u *URLServer) GetRedirectByTVF(context.Context, *pb.GetRedirectByTVFReq) (*pb.GetRedirectByTVFRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRedirectByTVF not implemented")
+func (u *URLServer) GetRedirectByTVF(ctx context.Context, in *pb.GetRedirectByTVFReq) (*pb.GetRedirectByTVFRes, error) {
+	redirect, err := u.URLRepo.GetRedirectByTVF(ctx, in.TVF)
+	if err != nil {
+		return nil, status.Errorf(utils.ParseGRPCErrStatusCode(err), "GetRedirectByTVF: %v", err)
+	}
+	redirectRPCResponse := &pb.GetRedirectByTVFRes{
+		Redirect: redirect,
+	}
+
+	return redirectRPCResponse, nil
 }
 
 func (u *URLServer) getTokenromCtx(ctx context.Context) (string, error) {

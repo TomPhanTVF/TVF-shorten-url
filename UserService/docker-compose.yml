@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   auth_microservice:
     container_name: auth_microservice
@@ -13,24 +15,11 @@ services:
     depends_on:
       - postgesql
       - redis
-      - prometheus
-      - node_exporter
-      - grafana
     restart: always
     volumes:
       - ./:/app
     networks:
       - auth_network
-
-  redis:
-    image: redis:6.0.9-alpine
-    container_name: auth_redis
-    ports:
-      - "6379:6379"
-    restart: always
-    networks:
-      - auth_network
-
   postgesql:
     image: postgres:13-alpine
     container_name: auth_postgesql
@@ -40,12 +29,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=auth_db
+      - POSTGRES_DB=shorten_db
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     networks:
       - auth_network
-
 networks:
   auth_network:
     driver: bridge

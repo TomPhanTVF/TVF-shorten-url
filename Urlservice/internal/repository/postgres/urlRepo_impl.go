@@ -52,3 +52,10 @@ func(u *UserRepository) FindUrlById(ctx context.Context, userId string)(*models.
 	}
 	return url, nil 
 }
+func(u *UserRepository)GetRedirectByTVF(ctx context.Context, TVF string)(string, error){
+	url := &models.URL{}
+	if err := u.db.GetContext(ctx, url, sql.FindRedirectByTVF, TVF); err != nil {
+		return "", errors.Wrap(err, "FindById.GetContext")
+	}
+	return url.Redirect, nil 
+}

@@ -8,4 +8,7 @@ const (
 	FindByOwnerIDQuery = `SELECT * FROM urls WHERE user_id = $1`
 
 	FindByIDQuery = `SELECT *  FROM urls WHERE id = $1`
+
+
+	FindRedirectByTVF = `SELECT * FROM urls where TVF= $1`
 )

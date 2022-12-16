@@ -13,6 +13,6 @@ RUN go mod download
 
 RUN go get github.com/githubnemo/CompileDaemon
 
-EXPOSE 5000
+EXPOSE 3000
 
 ENTRYPOINT CompileDaemon --build="go build cmd/auth/main.go" --command=./main

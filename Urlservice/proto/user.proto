@@ -65,12 +65,7 @@ message LogoutRequest{}
 message LogoutResponse {}
 
 service UserService{
-  rpc Register(RegisterRequest) returns (RegisterResponse){
-    // option (google.api.http) = {
-    //   post: "api/v1/register"
-    //   body: "*"
-    // };
-  };
+  rpc Register(RegisterRequest) returns (RegisterResponse){};
   rpc FindByEmail(FindByEmailRequest) returns (FindByEmailResponse);
   rpc FindByID(FindByIDRequest) returns (FindByIDResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
