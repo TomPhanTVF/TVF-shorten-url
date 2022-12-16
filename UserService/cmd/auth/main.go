@@ -17,7 +17,7 @@ func main() {
 		Port:     "5432",
 		Username: "postgres",
 		Password: "postgres",
-		DbName:   "shorten_db",
+		DbName:   "user_db",
 	}
 	sql.ConnectDB()
 	defer sql.Close()
