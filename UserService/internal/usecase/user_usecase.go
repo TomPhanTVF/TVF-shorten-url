@@ -4,9 +4,7 @@ import (
 	models "user-service/internal/models"
 	"user-service/internal/service"
 	"user-service/internal/repository/postgres"
-	"user-service/internal/repository/redis"
 	"user-service/internal/utils"
-	rd "github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 
 	"context"
@@ -20,12 +18,11 @@ const (
 // User UseCase
 type userUseCase struct {
 	userPgRepo postgres.UserPGRepository
-	redisRepo  redis.UserRedisRepository
 }
 
 // New User UseCase
-func NewUserUseCase(userRepo postgres.UserPGRepository, redisRepo redis.UserRedisRepository) service.UserService {
-	return &userUseCase{userPgRepo: userRepo, redisRepo: redisRepo}
+func NewUserUseCase(userRepo postgres.UserPGRepository) service.UserService {
+	return &userUseCase{userPgRepo: userRepo}
 }
 
 
@@ -53,21 +50,9 @@ func (u *userUseCase) FindByEmail(ctx context.Context, email string) (*models.Us
 
 // Find use by uuid
 func (u *userUseCase) FindById(ctx context.Context, userID string) (*models.User, error) {
-	cachedUser, err := u.redisRepo.GetByIDCtx(ctx, userID)
-	if err != nil && !errors.Is(err, rd.Nil) {
-		return nil, err
-	}
-	if cachedUser != nil {
-		return cachedUser, nil
-	}
-
 	foundUser, err := u.userPgRepo.FindById(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "userPgRepo.FindById")
-	}
-
-	if err := u.redisRepo.SetUserCtx(ctx, foundUser.ID, userByIdCacheDuration, foundUser); err != nil {
-		return nil, err
 	}
 
 	return foundUser, nil

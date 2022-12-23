@@ -30,7 +30,7 @@ func (r *UserRepository) Create(ctx context.Context, user *models.User) (*models
 		user.GetFirstName(),
 		user.GetLastName(),
 		user.GetEmail(),
-		user.GetPassword(),
+		user.HashPassword(),
 		user.GetRole(),
 	).StructScan(createdUser); err != nil {
 		return nil, errors.Wrap(err, "Create.QueryRowxContext")
